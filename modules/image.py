@@ -13,7 +13,6 @@ class Image:
         self.countours = self.getContours()
         self.geometries = self.getGeometries()
         self.checkGeometries = self.checkGeometries()
-        print(self.checkGeometries)
         self.drawContouredImg = self.drawContours()
 
     def normalize(self):
@@ -102,8 +101,10 @@ class Image:
 
     def checkSide(self, side1, side2):
         '''Проверить равенство сторон с учетом допусков'''
+        test = side1 <= side2 + side2 * self.DELTA
+        test2 = side1 >= side2 - side2 * self.DELTA
 
-        if (side1 <= side2 + side2 * self.DELTA or side1 >= side2 - side2 * self.DELTA):
+        if (side1 <= side2 + side2 * self.DELTA and side1 >= side2 - side2 * self.DELTA):
             return True
 
         return False
@@ -121,8 +122,24 @@ class Image:
         img = self.src.copy()
         contours = self.countours
 
+        i = 0
         for cont in contours:
+            check = self.checkGeometries[i]
+            red = (0, 0, 255)
+            green = (0, 255, 0)
+
             cv2.drawContours(img, [cont], -1, (0, 255, 0), 2)
+            cv2.putText(
+                img,
+                str(check),
+                (cont[0][0][0] + 10, cont[0][0][1] + 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                green if check else red,
+                3
+            )
+
+            i += 1
 
         return img
 
